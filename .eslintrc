@@ -36,6 +36,11 @@
       "minProperties": 5,
       "consistent": true
     }],
+    "object-curly-spacing": ["error", "always", {
+      "arraysInObjects": false,
+      "objectsInObjects": false
+    }],
+    "array-bracket-spacing": ["error", "never"],
     "one-var": ["error", {
       "initialized": "never",
       "uninitialized": "always"
