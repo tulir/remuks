@@ -1,0 +1,32 @@
+{
+  "name": "remuks",
+  "version": "0.1.0",
+  "license": "GPL-3.0",
+  "description": "A React Native Matrix client",
+  "author": "Tulir Asokan <tulir@maunium.net>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tulir/remuks"
+  },
+  "devDependencies": {
+    "react-native-scripts": "1.14.0",
+    "jest-expo": "~27.0.0",
+    "react-test-renderer": "16.3.1"
+  },
+  "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
+  "scripts": {
+    "start": "react-native-scripts start",
+    "eject": "react-native-scripts eject",
+    "android": "react-native-scripts android",
+    "ios": "react-native-scripts ios",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "expo": "^27.0.1",
+    "react": "16.3.1",
+    "react-native": "~0.55.2"
+  }
+}
