@@ -6,12 +6,14 @@
     "react-native-globals/all": true
   },
   "plugins": [
+    "flowtype",
     "react",
     "react-native",
     "react-native-globals"
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:flowtype/recommended",
     "plugin:react/recommended",
     "plugin:react-native/all"
   ],
@@ -45,7 +47,7 @@
     "camelcase": ["error", {"properties": "always"}],
     "space-before-function-paren": ["error", "never"],
     "func-style": ["warn", "declaration", {"allowArrowFunctions": true}],
-    "id-length": ["warn", {"max": 25, "exceptions": ["i", "x", "y", "$"]}],
+    "id-length": ["warn", {"max": 25, "exceptions": ["i", "x", "y"]}],
     "arrow-body-style": ["error", "as-needed"],
     "new-cap": ["warn", {
       "newIsCap": true,

@@ -1,17 +1,23 @@
+// @flow
+
 import React, { Component } from "react"
 import {
     StyleSheet,
     Text,
     View,
     TextInput,
-    Button,
     TouchableHighlight,
     Image,
     Alert,
 } from "react-native"
 
-export default class LoginView extends Component {
-    constructor(props) {
+type State = {
+    user: string,
+    password: string
+}
+
+export default class LoginView extends Component<{}, State> {
+    constructor(props: {}) {
         super(props)
         this.state = {
             user: "",
@@ -19,7 +25,7 @@ export default class LoginView extends Component {
         }
     }
 
-    onClickListener = (viewId) => {
+    onClickListener = (viewId: string) => {
         Alert.alert("Alert", "Button pressed "+viewId)
     }
 

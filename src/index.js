@@ -1,9 +1,8 @@
-import Expo from 'expo'
-import Remuks from './Remuks'
-import React from 'react'
+import Expo from "expo"
+import Remuks from "./Remuks"
 
-if (process.env.NODE_ENV === 'development') {
-	Expo.KeepAwake.activate();
+if (process.env.NODE_ENV === "development") {
+    Expo.KeepAwake.activate()
 }
 
-Expo.registerRootComponent(Remuks);
+Expo.registerRootComponent(Remuks)
