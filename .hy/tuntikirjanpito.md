@@ -7,4 +7,5 @@
 | 5.9.  | 2    | Flow setup, matrix-js-sdk tallennuksen tutkiminen ja implementaation aloitus                          |
 | 7.9.  | 5    | Navigator, päänäkymän aloitus, tallennuksen tutkimista                                                |
 | 8.9.  | 4    | Puolet tallennusimplementaatiosta, MatrixClient instanssin luominen                                   |
-|**yht**| 16   |                                                                                                       |
+| 8.9.  | 1    | "Väliaikainen" logo, cryptotallennusimplementaatio ~valmiiksi, RemuksClient-luokka                    |
+|**yht**| 17   |                                                                                                       |

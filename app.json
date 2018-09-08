@@ -1,9 +1,11 @@
 {
   "expo": {
-    "name": "remuks",
-    "sdkVersion": "27.0.0",
+    "name": "Remuks",
+    "slug": "remuks",
     "description": "A React Native Matrix client",
+    "icon": "./res/remuks-borderless.png",
     "version": "0.1.0",
+    "sdkVersion": "27.0.0",
     "android": {
       "package": "net.maunium.remuks"
     },

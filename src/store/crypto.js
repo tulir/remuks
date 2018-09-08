@@ -22,12 +22,20 @@ import { AsyncStorage } from "react-native"
  * Matrix crypto store backed by React Native AsyncStorage.
  */
 export default class RemuksCryptoStore {
+    sessionID: string
+
+    constructor(sessionID: string) {
+        this.sessionID = sessionID
+    }
+
     // region Sessions
 
-    countEndToEndSessions(txn: any, func: (count: number) => void) {
+    async countEndToEndSessions(txn: any, func: (count: number) => void): void {
         let count = 0
-        for (let i = 0; i < this.store.length; ++i) {
-            if (this.store.key(i).startsWith(keyEndToEndSessions(""))) ++count
+        for (const key of await AsyncStorage.getAllKeys()) {
+            if (key.startsWith(keyEndToEndSessions(""))) {
+                count++
+            }
         }
         func(count)
     }
@@ -117,11 +125,10 @@ export default class RemuksCryptoStore {
         const result = {}
         const prefix = keyEndToEndRoomsPrefix("")
 
-        for (let i = 0; i < this.store.length; ++i) {
-            const key = this.store.key(i)
+        for (const key of await AsyncStorage.getAllKeys()) {
             if (key.startsWith(prefix)) {
                 const roomID = key.substr(prefix.length)
-                result[roomID] = getJSONItem(key)
+                result[roomID] = await getJSONItem(key)
             }
         }
         func(result)

@@ -25,7 +25,8 @@ type Props = {
 }
 
 export default class AuthCheck extends Component<Props> {
-    componentDidMount() {
+    async componentDidMount() {
+
         setTimeout(() => {
             this.props.navigation.navigate("AuthStack")
         }, 2000)

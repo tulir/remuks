@@ -28,7 +28,6 @@ export default class RemuksCacheStore extends MatrixInMemoryStore {
     constructor() {
         super(undefined)
         this.filterIDs = {}
-        this._loadFilterIDs().then(() => console.log("Filter IDs loaded"))
     }
 
     getFilterIdByName(name: string): ?string {
@@ -38,6 +37,14 @@ export default class RemuksCacheStore extends MatrixInMemoryStore {
     setFilterIdByName(name: string, id: string) {
         this.filters[name] = id
         this._saveFilterIDs().then(() => console.log("Filter IDs saved"))
+    }
+
+    async load() {
+        await this._loadFilterIDs()
+    }
+
+    async save() {
+        await this._saveFilterIDs()
     }
 
     async _saveFilterIDs() {

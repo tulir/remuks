@@ -18,10 +18,9 @@
 
 import Matrix from "matrix-js-sdk"
 import { MatrixClient } from "matrix-js-sdk"
-import { RemuksCacheStore, RemuksCryptoStore } from "./store"
-import RemuksStore from "./store/base"
+import { RemuksCacheStore, RemuksCryptoStore, RemuksStore } from "./store"
 
-export default class ReMXClient {
+export default class RemuksClient {
     client: MatrixClient
     store: RemuksStore
     cacheStore: RemuksCacheStore
@@ -33,10 +32,26 @@ export default class ReMXClient {
         this.store = new RemuksStore()
     }
 
+    async loadStores() {
+        await Promise.all([this.store.load(), this.cacheStore.load()])
+    }
+
+    createTempClient(url: string): MatrixClient {
+        return Matrix.createClient({
+            baseUrl: url,
+        })
+    }
+
     createClient() {
         this.client = Matrix.createClient({
             store: this.cacheStore,
             cryptoStore: this.cryptoStore,
+
+            baseUrl: this.store.hsURL,
+            idBaseUrl: this.store.isURL,
+            accessToken: this.store.accessToken,
+            userId: this.store.userID,
+            deviceId: this.store.deviceID,
         })
     }
 

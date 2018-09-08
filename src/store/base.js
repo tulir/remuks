@@ -28,11 +28,7 @@ export default class RemuksStore {
     accessToken: string
     deviceID: string
 
-    constructor() {
-        this._load().then(() => console.log("Base store loaded"))
-    }
-
-    async _load(): Promise<void> {
+    async load(): Promise<void> {
         const data = await AsyncStorage.multiGet(["hs_url", "is_url", "user_id",
                                                   "access_token","device_id"])
         const map: Map = new Map(data)
@@ -43,7 +39,7 @@ export default class RemuksStore {
         this.deviceID = map.get("device_id")
     }
 
-    async _save(): Promise<void> {
+    async save(): Promise<void> {
         await AsyncStorage.multiSet(Object.entries(this))
     }
 }
