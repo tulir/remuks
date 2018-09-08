@@ -14,35 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// @flow
+
 import React, { Component } from "react"
-import { createStackNavigator, createSwitchNavigator } from "react-navigation"
+import Spinner from "react-native-loading-spinner-overlay"
+import { type NavigationScreenProp } from "react-navigation"
 
-import Login from "./Login"
-import AuthCheck from "./AuthCheck"
-import Home from "./Home"
+type Props = {
+    navigation: NavigationScreenProp<*>,
+}
 
-const AppStack = createStackNavigator({
-    Home,
-}, {
-    initialRouteName: "Home",
-})
+export default class AuthCheck extends Component<Props> {
+    componentDidMount() {
+        setTimeout(() => {
+            this.props.navigation.navigate("AuthStack")
+        }, 2000)
+    }
 
-const AuthStack = createStackNavigator({
-    Login,
-}, {
-    initialRouteName: "Login",
-})
-
-const Navigator = createSwitchNavigator({
-    AuthCheck,
-    AuthStack,
-    AppStack,
-}, {
-    initialRouteName: "AuthCheck",
-})
-
-export default class Remuks extends Component {
     render() {
-        return <Navigator/>
+        return <Spinner visible={true} overlayColor="transparent" color="#2196F3" animation="fade"/>
     }
 }

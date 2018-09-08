@@ -14,35 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// @flow
+
 import React, { Component } from "react"
-import { createStackNavigator, createSwitchNavigator } from "react-navigation"
+import { type StackNavigator } from "react-navigation"
 
-import Login from "./Login"
-import AuthCheck from "./AuthCheck"
-import Home from "./Home"
+type Props = {
+    navigation: StackNavigator
+}
 
-const AppStack = createStackNavigator({
-    Home,
-}, {
-    initialRouteName: "Home",
-})
-
-const AuthStack = createStackNavigator({
-    Login,
-}, {
-    initialRouteName: "Login",
-})
-
-const Navigator = createSwitchNavigator({
-    AuthCheck,
-    AuthStack,
-    AppStack,
-}, {
-    initialRouteName: "AuthCheck",
-})
-
-export default class Remuks extends Component {
+export default class Home extends Component<Props> {
     render() {
-        return <Navigator/>
+        return (
+            <div>foo</div>
+        )
     }
 }
