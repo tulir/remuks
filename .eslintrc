@@ -50,7 +50,11 @@
     "comma-dangle": ["error", "always-multiline"],
     "max-len": ["warn", 100],
     "camelcase": ["error", {"properties": "always"}],
-    "space-before-function-paren": ["error", "never"],
+    "space-before-function-paren": ["error", {
+      "anonymous": "never",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
     "func-style": ["warn", "declaration", {"allowArrowFunctions": true}],
     "id-length": ["warn", {"max": 40, "exceptions": ["i", "x", "y", "_"]}],
     "arrow-body-style": ["error", "as-needed"],

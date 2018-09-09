@@ -18,14 +18,56 @@
 
 import { AsyncStorage } from "react-native"
 
+const E2E_PREFIX = "crypto"
+const KEY_ACCOUNT = `${E2E_PREFIX}.account`
+const KEY_DEVICE_DATA = `${E2E_PREFIX}.device_data`
+const KEY_SESSION_PREFIX = `${E2E_PREFIX}.sessions`
+const KEY_INBOUND_SESSION_PREFIX = `${E2E_PREFIX}.inbound_group_sessions`
+const KEY_ROOMS_PREFIX = `${E2E_PREFIX}.rooms`
+
 /**
  * Matrix crypto store backed by React Native AsyncStorage.
  */
 export default class RemuksCryptoStore {
     sessionID: string
+    _keySessionPrefix: string
+    _keyAccount: string
+    _keyInboundSessionPrefix: string
+    _keyRoomsPrefix: string
+    _keyDeviceData: string
 
     constructor(sessionID: string) {
         this.sessionID = sessionID
+
+        this._keyAccount = `${this.sessionID}/${KEY_ACCOUNT}`
+        this._keyDeviceData = `${this.sessionID}/${KEY_DEVICE_DATA}`
+        this._keyRoomsPrefix = `${this.sessionID}/${KEY_ROOMS_PREFIX}/`
+        this._keySessionPrefix = `${this.sessionID}/${KEY_SESSION_PREFIX}/`
+        this._keyInboundSessionPrefix = `${this.sessionID}/${KEY_INBOUND_SESSION_PREFIX}/`
+    }
+
+    _keyEndToEndSessions(deviceKey: string): string {
+        return `${this._keySessionPrefix}${deviceKey}`
+    }
+
+    _keyEndToEndInboundGroupSession(senderKey: string, sessionID: string): string {
+        return `${this._keyInboundSessionPrefix}${senderKey}/${sessionID}`
+    }
+
+    _keyEndToEndRoomsPrefix(roomID: string): string {
+        return `${this._keyRoomsPrefix}${roomID}`
+    }
+
+    async delete(): Promise<void> {
+        const keysToDelete = [this._keyDeviceData, this._keyAccount]
+        for (const key of await AsyncStorage.getAllKeys()) {
+            if (key.startsWith(this._keyRoomsPrefix)
+                || key.startsWith(this._keyInboundSessionPrefix)
+                || key.startsWith(this._keySessionPrefix)) {
+                keysToDelete.push(key)
+            }
+        }
+        await AsyncStorage.multiRemove(keysToDelete)
     }
 
     // region Sessions
@@ -33,7 +75,7 @@ export default class RemuksCryptoStore {
     async countEndToEndSessions(txn: any, func: (count: number) => void): void {
         let count = 0
         for (const key of await AsyncStorage.getAllKeys()) {
-            if (key.startsWith(keyEndToEndSessions(""))) {
+            if (key.startsWith(this._keySessionPrefix)) {
                 count++
             }
         }
@@ -41,7 +83,7 @@ export default class RemuksCryptoStore {
     }
 
     _getEndToEndSessions(deviceKey: string): Promise<{}> {
-        return getJSONItem(keyEndToEndSessions(deviceKey))
+        return getJSONItem(this._keyEndToEndSessions(deviceKey))
     }
 
     async getEndToEndSession(deviceKey: string, sessionID: string, txn: any,
@@ -58,7 +100,7 @@ export default class RemuksCryptoStore {
     async storeEndToEndSession(deviceKey: string, sessionID: string, session: {}): Promise<void> {
         const sessions = (await this._getEndToEndSessions(deviceKey)) || {}
         sessions[sessionID] = session
-        await setJSONItem(keyEndToEndSessions(deviceKey), sessions)
+        await setJSONItem(this._keyEndToEndSessions(deviceKey), sessions)
     }
 
     // endregion
@@ -66,21 +108,22 @@ export default class RemuksCryptoStore {
 
     async getEndToEndInboundGroupSession(senderCurve25519Key: string, sessionID: string, txn: any,
                                          func: (session: {}) => void): Promise<void> {
-        func(await getJSONItem(keyEndToEndInboundGroupSession(senderCurve25519Key, sessionID)))
+        func(await getJSONItem(this._keyEndToEndInboundGroupSession(senderCurve25519Key,
+                                                                    sessionID)))
     }
 
     async getAllEndToEndInboundGroupSessions(txn: any,
                                              func: (session: ?{}) => void): Promise<void> {
         for (const key of await AsyncStorage.getAllKeys()) {
-            if (key.startsWith(KEY_INBOUND_SESSION_PREFIX)) {
+            if (key.startsWith(this._keyInboundSessionPrefix)) {
                 // we can't use split, as the components we are trying to split out
                 // might themselves contain '/' characters. We rely on the
                 // senderKey being a (32-byte) curve25519 key, base64-encoded
                 // (hence 43 characters long).
 
                 func({
-                    senderKey: key.substr(KEY_INBOUND_SESSION_PREFIX.length, 43),
-                    sessionID: key.substr(KEY_INBOUND_SESSION_PREFIX.length + 44),
+                    senderKey: key.substr(this._keyInboundSessionPrefix.length, 43),
+                    sessionID: key.substr(this._keyInboundSessionPrefix.length + 44),
                     sessionData: await getJSONItem(key),
                 })
             }
@@ -90,8 +133,8 @@ export default class RemuksCryptoStore {
 
     async addEndToEndInboundGroupSession(senderCurve25519Key: string, sessionID: string,
                                          sessionData: {}): Promise<void> {
-        const existing = await getJSONItem(keyEndToEndInboundGroupSession(senderCurve25519Key,
-                                                                          sessionID))
+        const existing = await getJSONItem(this._keyEndToEndInboundGroupSession(senderCurve25519Key,
+                                                                                sessionID))
         if (!existing) {
             await this.storeEndToEndInboundGroupSession(senderCurve25519Key, sessionID, sessionData)
         }
@@ -99,7 +142,7 @@ export default class RemuksCryptoStore {
 
     storeEndToEndInboundGroupSession(senderCurve25519Key: string, sessionID: string,
                                      sessionData: {}): Promise<void> {
-        return setJSONItem(keyEndToEndInboundGroupSession(senderCurve25519Key, sessionID),
+        return setJSONItem(this._keyEndToEndInboundGroupSession(senderCurve25519Key, sessionID),
                            sessionData)
     }
 
@@ -107,23 +150,23 @@ export default class RemuksCryptoStore {
     // region Device data
 
     async getEndToEndDeviceData(txn: any, func: (data: any) => void): Promise<void> {
-        func(await getJSONItem(KEY_DEVICE_DATA))
+        func(await getJSONItem(this._keyDeviceData))
     }
 
     storeEndToEndDeviceData(deviceData: any): Promise<void> {
-        return setJSONItem(KEY_DEVICE_DATA, deviceData)
+        return setJSONItem(this._keyDeviceData, deviceData)
     }
 
     // endregion
     // region Room data
 
     storeEndToEndRoom(roomID: string, roomInfo: {}): Promise<void> {
-        return setJSONItem(keyEndToEndRoomsPrefix(roomID), roomInfo)
+        return setJSONItem(this._keyEndToEndRoomsPrefix(roomID), roomInfo)
     }
 
     async getEndToEndRooms(txn: any, func: (result: {}) => void): Promise<void> {
         const result = {}
-        const prefix = keyEndToEndRoomsPrefix("")
+        const prefix = this._keyEndToEndRoomsPrefix("")
 
         for (const key of await AsyncStorage.getAllKeys()) {
             if (key.startsWith(prefix)) {
@@ -138,18 +181,18 @@ export default class RemuksCryptoStore {
     // region Olm account
 
     async getAccount(txn: any, func: (account: any) => void): Promise<void> {
-        func(await getJSONItem(KEY_END_TO_END_ACCOUNT))
+        func(await getJSONItem(this._keyAccount))
     }
 
     storeAccount(txn: any, newData: any): Promise<void> {
-        return setJSONItem(KEY_END_TO_END_ACCOUNT, newData)
+        return setJSONItem(this._keyAccount, newData)
     }
 
     // endregion
     // region Other stuff
 
     deleteAllData(): Promise<void> {
-        return AsyncStorage.removeItem(KEY_END_TO_END_ACCOUNT)
+        return AsyncStorage.removeItem(this._keyAccount)
     }
 
     async doTxn<T>(mode: any, stores: any, func: (param: any) => T): Promise<T> {
@@ -171,27 +214,6 @@ async function getJSONItem(key: string, defaultValue: any = null): Promise<any> 
 
 function setJSONItem(key: string, value: any): Promise<void> {
     return AsyncStorage.setItem(key, JSON.stringify(value))
-}
-
-// endregion
-// region Store paths
-
-const E2E_PREFIX = "crypto."
-const KEY_END_TO_END_ACCOUNT = E2E_PREFIX + "account"
-const KEY_DEVICE_DATA = E2E_PREFIX + "device_data"
-const KEY_INBOUND_SESSION_PREFIX = E2E_PREFIX + "inbound_group_sessions/"
-const KEY_ROOMS_PREFIX = E2E_PREFIX + "rooms/"
-
-function keyEndToEndSessions(deviceKey: string): string {
-    return `${E2E_PREFIX}sessions/${deviceKey}`
-}
-
-function keyEndToEndInboundGroupSession(senderKey: string, sessionID: string): string {
-    return `${KEY_INBOUND_SESSION_PREFIX}${senderKey}/${sessionID}`
-}
-
-function keyEndToEndRoomsPrefix(roomID: string): string {
-    return KEY_ROOMS_PREFIX + roomID
 }
 
 // endregion

@@ -33,6 +33,7 @@
     "react-native": "~0.55.2",
     "react-native-gifted-chat": "^0.4.3",
     "react-native-loading-spinner-overlay": "^0.5.2",
-    "react-navigation": "^2.13.0"
+    "react-navigation": "^2.13.0",
+    "uuid": "^3.3.2"
   }
 }

@@ -19,40 +19,43 @@
 import { MatrixInMemoryStore } from "matrix-js-sdk"
 import { AsyncStorage } from "react-native"
 
+const KEY_FILTER_IDS = "filter_ids"
+
 /**
  * Matrix cache store backed by React Native AsyncStorage.
  */
 export default class RemuksCacheStore extends MatrixInMemoryStore {
+    sessionID: string
     filterIDs: { [name: string]: string }
 
-    constructor() {
-        super(undefined)
-        this.filterIDs = {}
-    }
+    _keyFilterIDs: string
 
+    constructor(sessionID: string) {
+        super(undefined)
+        this.sessionID = sessionID
+        this.filterIDs = {}
+        this._keyFilterIDs = `${this.sessionID}/${KEY_FILTER_IDS}`
+    }
+    
     getFilterIdByName(name: string): ?string {
         return this.filters[name] || null
     }
 
-    setFilterIdByName(name: string, id: string) {
+    setFilterIdByName(name: string, id: string): void {
         this.filters[name] = id
         this._saveFilterIDs().then(() => console.log("Filter IDs saved"))
     }
 
-    async load() {
-        await this._loadFilterIDs()
+    async load(): Promise<void> {
+        this.filterIDs = JSON.parse((await AsyncStorage.getItem(this.#keyFilterIDs)) || "{}")
     }
 
-    async save() {
-        await this._saveFilterIDs()
+    async save(): Promise<void> {
+        await AsyncStorage.setItem(this._keyFilterIDs, JSON.stringify(this.filterIDs))
     }
 
-    async _saveFilterIDs() {
-        await AsyncStorage.setItem("filters_ids", JSON.stringify(this.filterIDs))
-    }
-
-    async _loadFilterIDs() {
-        this.filterIDs = JSON.parse((await AsyncStorage.getItem("filter_ids")) || "{}")
+    async delete(): Promise<void> {
+        await AsyncStorage.removeItem(this._keyFilterIDs)
     }
 }
 

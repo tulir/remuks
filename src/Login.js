@@ -20,6 +20,7 @@ import React, { Component } from "react"
 import { StyleSheet, Text, View, TextInput, TouchableHighlight, Image, Alert,
          Button } from "react-native"
 import { type StackNavigator } from "react-navigation"
+import RemuksClient from "./mxclient"
 
 type State = {
     user: string,
@@ -49,7 +50,21 @@ export default class LoginView extends Component<Props, State> {
         Alert.alert("Alert", "Button pressed "+viewId)
     }
 
-    login = () => {
+    login = async () => {
+        const client = new RemuksClient()
+        const mxclient = client.createTempClient(this.state.homeserver)
+        let resp
+        try {
+            resp = await mxclient.loginWithPassword(this.state.user, this.state.password)
+        } catch (err) {
+            console.error(err)
+            return
+        }
+        client.store.hsURL = this.state.homeserver
+        client.store.isURL = "https://matrix.org"
+        client.store.copyFrom(resp)
+        await client.store.save()
+        await client.init()
         this.props.navigation.navigate("Home")
     }
 

@@ -8,4 +8,5 @@
 | 7.9.  | 5    | Navigator, päänäkymän aloitus, tallennuksen tutkimista                                                |
 | 8.9.  | 4    | Puolet tallennusimplementaatiosta, MatrixClient instanssin luominen                                   |
 | 8.9.  | 1    | "Väliaikainen" logo, cryptotallennusimplementaatio ~valmiiksi, RemuksClient-luokka                    |
-|**yht**| 17   |                                                                                                       |
+| 9.9   | 2    | Tallennuksen muokkaaminen monelle käyttäjälle sopivaksi, navigaatiovaihtoehtojen tutkimista           |
+|**yht**| 19   |                                                                                                       |
