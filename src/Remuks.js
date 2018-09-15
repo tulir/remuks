@@ -14,35 +14,61 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// @flow
+
 import React, { Component } from "react"
-import { createStackNavigator, createSwitchNavigator } from "react-navigation"
 
 import Login from "./Login"
-import AuthCheck from "./AuthCheck"
 import Home from "./Home"
+import { View } from "react-native"
+import { SkypeIndicator } from "react-native-indicators"
+import RemuksClient from "./mxclient"
 
-const AppStack = createStackNavigator({
-    Home,
-}, {
-    initialRouteName: "Home",
-})
+type Props = {
 
-const AuthStack = createStackNavigator({
-    Login,
-}, {
-    initialRouteName: "Login",
-})
+}
 
-const Navigator = createSwitchNavigator({
-    AuthCheck,
-    AuthStack,
-    AppStack,
-}, {
-    initialRouteName: "AuthCheck",
-})
+type State = {
+    authChecked: boolean,
+    clients: RemuksClient[],
+}
 
-export default class Remuks extends Component {
+export default class Remuks extends Component<Props, State> {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            authChecked: false,
+            clients: [],
+        }
+    }
+
+    async componentDidMount() {
+        this.setState({
+            clients: await RemuksClient.getAll(),
+            authChecked: true,
+        })
+    }
+
+    login(client: RemuksClient) {
+        if (!client.hasAccessToken()) {
+            throw new Error("Client does not have access token.")
+        }
+        this.setState({
+            clients: this.state.clients.concat(client),
+        })
+    }
+    
     render() {
-        return <Navigator/>
+        if (!this.state.authChecked) {
+            return <View style={{ flex: 1 }}>
+                <SkypeIndicator color="#2196F3" size={64}/>
+            </View>
+        }
+        if (this.state.clients.length === 0) {
+            return <Login remuks={this}/>
+        }
+
+        return <Home remuks={this}/>
     }
 }

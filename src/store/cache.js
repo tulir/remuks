@@ -43,11 +43,11 @@ export default class RemuksCacheStore extends MatrixInMemoryStore {
 
     setFilterIdByName(name: string, id: string): void {
         this.filters[name] = id
-        this._saveFilterIDs().then(() => console.log("Filter IDs saved"))
+        this.save().then(() => console.log("Filter IDs saved"))
     }
 
     async load(): Promise<void> {
-        this.filterIDs = JSON.parse((await AsyncStorage.getItem(this.#keyFilterIDs)) || "{}")
+        this.filterIDs = JSON.parse((await AsyncStorage.getItem(this._keyFilterIDs)) || "{}")
     }
 
     async save(): Promise<void> {

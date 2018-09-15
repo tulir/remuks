@@ -19,8 +19,8 @@
 import React, { Component } from "react"
 import { StyleSheet, Text, View, TextInput, TouchableHighlight, Image, Alert,
          Button } from "react-native"
-import { type StackNavigator } from "react-navigation"
 import RemuksClient from "./mxclient"
+import type Remuks from "./Remuks"
 
 type State = {
     user: string,
@@ -29,14 +29,10 @@ type State = {
 }
 
 type Props = {
-    navigation: StackNavigator
+    remuks: Remuks,
 }
 
 export default class LoginView extends Component<Props, State> {
-    static navigationOptions = {
-        title: "Sign in to Remuks",
-    }
-
     constructor(props: Props) {
         super(props)
         this.state = {
@@ -60,12 +56,12 @@ export default class LoginView extends Component<Props, State> {
             console.error(err)
             return
         }
+        await client.init()
         client.store.hsURL = this.state.homeserver
         client.store.isURL = "https://matrix.org"
         client.store.copyFrom(resp)
         await client.store.save()
-        await client.init()
-        this.props.navigation.navigate("Home")
+        this.props.remuks.login(client)
     }
 
     render() {

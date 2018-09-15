@@ -17,6 +17,10 @@
 import Expo from "expo"
 import Remuks from "./Remuks"
 
+import Matrix from "matrix-js-sdk"
+import request from "./browserless-request"
+Matrix.request(request)
+
 if (process.env.NODE_ENV === "development") {
     Expo.KeepAwake.activate()
 }

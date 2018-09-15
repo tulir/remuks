@@ -76,6 +76,10 @@ export default class RemuksClient {
         await this.cacheStore.delete()
     }
 
+    hasAccessToken() {
+        return this.store.isAuthenticated()
+    }
+
     createTempClient(url: string): MatrixClient {
         return Matrix.createClient({
             baseUrl: url,

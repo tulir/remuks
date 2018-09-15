@@ -9,4 +9,5 @@
 | 8.9.  | 4    | Puolet tallennusimplementaatiosta, MatrixClient instanssin luominen                                   |
 | 8.9.  | 1    | "Väliaikainen" logo, cryptotallennusimplementaatio ~valmiiksi, RemuksClient-luokka                    |
 | 9.9   | 2    | Tallennuksen muokkaaminen monelle käyttäjälle sopivaksi, navigaatiovaihtoehtojen tutkimista           |
-|**yht**| 19   |                                                                                                       |
+| 15.9. | 4    | Välimuistimahdollisuuksien tutkiminen, browser-request kirjastosta RNssä toimiva versio, login toimii |
+|**yht**| 23   |                                                                                                       |

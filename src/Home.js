@@ -17,16 +17,19 @@
 // @flow
 
 import React, { Component } from "react"
-import { type StackNavigator } from "react-navigation"
+import { Text, View } from "react-native"
+import type Remuks from "./Remuks"
 
 type Props = {
-    navigation: StackNavigator
+    remuks: Remuks
 }
 
 export default class Home extends Component<Props> {
     render() {
         return (
-            <div>foo</div>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text>I think you&apos;re logged in now.</Text>
+            </View>
         )
     }
 }
