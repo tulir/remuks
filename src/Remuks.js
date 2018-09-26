@@ -31,6 +31,7 @@ type Props = {
 type State = {
     authChecked: boolean,
     clients: RemuksClient[],
+    activeClient: RemuksClient,
 }
 
 export default class Remuks extends Component<Props, State> {
@@ -40,12 +41,15 @@ export default class Remuks extends Component<Props, State> {
         this.state = {
             authChecked: false,
             clients: [],
+            activeClient: undefined,
         }
     }
 
     async componentDidMount() {
+        const clients = await RemuksClient.getAll()
         this.setState({
-            clients: await RemuksClient.getAll(),
+            clients,
+            activeClient: clients.length > 0 ? clients[0] : undefined,
             authChecked: true,
         })
     }
@@ -56,9 +60,10 @@ export default class Remuks extends Component<Props, State> {
         }
         this.setState({
             clients: this.state.clients.concat(client),
+            activeClient: client,
         })
     }
-    
+
     render() {
         if (!this.state.authChecked) {
             return <View style={{ flex: 1 }}>
@@ -69,6 +74,6 @@ export default class Remuks extends Component<Props, State> {
             return <Login remuks={this}/>
         }
 
-        return <Home remuks={this}/>
+        return <Home remuks={this.state.activeClient}/>
     }
 }
